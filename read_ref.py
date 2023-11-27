@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 from geopy.distance import geodesic
 # Path to your NetCDF file
-netcdf_file_path = '/media/krishna/Media1/tmp/nexrad/KHGX20220722_232535_V06.nc'
+netcdf_file_path = '//KHGX20220722_232535_V06.nc'
 # Open the NetCDF file
 dataset = nc.Dataset(netcdf_file_path)
 
