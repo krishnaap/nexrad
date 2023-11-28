@@ -5,17 +5,18 @@ Created on Fri Nov 24 11:48:32 2023
 
 @author: krishna
 """
-
-
 import netCDF4 as nc
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
-from geopy.distance import geodesic
-import numpy as np
+import matplotlib as mpl
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
+import numpy as np
+
+# Set global font size
+mpl.rcParams.update({'font.size': 20})  # Adjust the size as needed
 
 # Path to your NetCDF file
-netcdf_file_path = '/media/nexrad/KHGX20220722_190443_V06.nc'
+netcdf_file_path = '/media/nexrad/8_13/NEXRAD-selected/KHGX20220813_192627_V06.nc'
 
 # Open the NetCDF file
 dataset = nc.Dataset(netcdf_file_path)
@@ -27,45 +28,34 @@ longitude = dataset.variables['longitude'][0]
 # Extract the reflectivity data for the first elevation level
 ref_data = dataset.variables['REF'][0, :, :]  # Adjust indices as needed
 
-# Calculate the extent using geodesic distances
-km_in_degrees_lat = geodesic((latitude, longitude), (latitude + 1, longitude)).km
-km_in_degrees_lon = geodesic((latitude, longitude), (latitude, longitude + 1)).km
-
-delta_lat = 200 / km_in_degrees_lat
-delta_lon = 200 / km_in_degrees_lon
-
-extent = [longitude - delta_lon, longitude + delta_lon, latitude - delta_lat, latitude + delta_lat]
-
 # Set up a map projection
 projection = ccrs.PlateCarree()
 
 # Create a figure
-plt.figure(figsize=(10, 8))
-ax = plt.axes(projection=projection)
+fig, ax = plt.subplots(figsize=(12, 10), subplot_kw={'projection': projection})  # Adjust figure size as needed
+
+# Add features to the map
+ax.coastlines()
+gl = ax.gridlines(draw_labels=True)
+gl.top_labels = False  # Disable top labels
+gl.right_labels = False  # Disable right labels
+
+# Set the extent of the map to the specified lat-lon bounds
+# ax.set_extent([-95.75, -95, 29.5, 30.25], crs=ccrs.PlateCarree())
+
+# Plotting the reflectivity data
+reflectivity = ax.imshow(ref_data, origin='lower', extent=[longitude - 1, longitude + 1, latitude - 1, latitude + 1], transform=projection, interpolation='nearest', cmap='jet')
+
+# Add a color bar
+cbar = plt.colorbar(reflectivity, ax=ax, orientation='vertical', pad=0.05, aspect=50)
+cbar.set_label('Reflectivity (dBZ)')
 
 # Mark a specific point
 specific_lat = 29.47190094
 specific_lon = -95.07873535 
-ax.plot(specific_lon, specific_lat, 'ro', markersize=10, transform=ccrs.Geodetic())
+ax.plot(specific_lon, specific_lat, 'ro', markersize=20, transform=ccrs.Geodetic())
 
-
-# Add features to the map
-ax.coastlines()
-ax.gridlines()
-
-# Set the extent of the plot
-ax.set_extent(extent, crs=ccrs.PlateCarree())
-
-# Plotting the data
-ax.imshow(ref_data, origin='lower', extent=extent, transform=ccrs.PlateCarree(), interpolation='nearest', cmap='viridis')
-
-# Set labels for the axes
-xticks = np.linspace(extent[0], extent[1], 6)
-yticks = np.linspace(extent[2], extent[3], 6)
-ax.set_xticks(xticks, crs=ccrs.PlateCarree())
-ax.set_yticks(yticks, crs=ccrs.PlateCarree())
-ax.xaxis.set_major_formatter(LongitudeFormatter())
-ax.yaxis.set_major_formatter(LatitudeFormatter())
-
-plt.title('Radar Reflectivity')
+# Show the plot with larger title
+plt.title('Radar Reflectivity', fontsize=16)  # Adjust title font size as needed
 plt.show()
+
