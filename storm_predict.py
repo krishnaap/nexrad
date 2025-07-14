@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Estimate storm movement using optical flow and GFS wind data."""
+"""Estimate storm movement using ML and GFS wind data."""
 
 from datetime import datetime, timedelta
 
