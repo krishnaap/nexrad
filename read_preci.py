@@ -15,7 +15,7 @@ import cartopy.crs as ccrs
 # Set global font size
 mpl.rcParams.update({'font.size': 20})  # Adjust the size as needed
 # Path to your NEXRAD radar file
-nexrad_file_path = '/media/krishna/Media1/nexrad/KHGX_SDUS34_N1PHGX_202207221910'
+nexrad_file_path = 'KHGX_SDUS34_N1PHGX_202207221910'
 # Read the radar file using Py-ART
 radar = pyart.io.read(nexrad_file_path)
 # Set up a map projection
